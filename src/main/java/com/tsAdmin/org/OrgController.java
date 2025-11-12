@@ -167,8 +167,21 @@ public class OrgController extends Controller {
 	@Clear
 	public void getPolyline() {
 		try {
-			String origin = getPara("origin", "113.124075,23.018825");
-	        String destination = getPara("destination", "116.397056, 39.917337");
+			String origin = getPara("origin");
+	        String destination = getPara("destination");
+	        
+	        //检查前端坐标点输入
+	        if ((origin == null || origin.trim().isEmpty()) && (destination == null || destination.trim().isEmpty())) {
+	            renderJson(Ret.fail("code", -1).set("message", "请输入起点和终点坐标"));
+	            return;
+	        } else if (destination == null || destination.trim().isEmpty()) {
+	            renderJson(Ret.fail("code", -1).set("message", "请输入终点坐标"));
+	            return;
+	        } else if (origin == null || origin.trim().isEmpty()) {
+	            renderJson(Ret.fail("code", -1).set("message", "请输入起点坐标"));
+	            return;
+	        }
+	        
 			String myKey = "af8d7eef6373429b855d68efaf3ed6af";
 			
 			String getPolylineDataURL = "https://restapi.amap.com/v3/direction/driving?"
@@ -220,8 +233,6 @@ public class OrgController extends Controller {
 		                response.put("polylines", polylines);
 		                response.put("distance", firstPath.get("distance"));
 		                response.put("duration", firstPath.get("duration"));
-		                //response.put("result", result);
-		                //response.put("step", firstStep.get("instruction"));    //测试
 		                
 		                renderJson(response);
 	                } else {
